@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base-blue: #0052FF;
+  --color-base-dark: #0F172A;
+  --color-base-light: #F8FAFC;
+
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-holo: holo 6s ease infinite;
+
+  @keyframes glow {
+    0% {
+      box-shadow: 0 0 5px #0052FF, 0 0 10px #0052FF;
+    }
+
+    100% {
+      box-shadow: 0 0 20px #0052FF, 0 0 30px #0052FF;
+    }
+  }
+
+  @keyframes holo {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-white overflow-x-hidden;
+    background: radial-gradient(circle at top center, #1e293b 0%, #020617 100%);
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl shadow-xl;
+  }
+
+  .btn-primary {
+    @apply text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center gap-2;
+    background-color: var(--color-base-blue);
+    box-shadow: 0 10px 15px -3px rgba(0, 82, 255, 0.1), 0 4px 6px -2px rgba(0, 82, 255, 0.05);
+  }
+
+  .btn-primary:hover {
+    background-color: #2563eb;
+    /* fallback or calculate */
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5), 0 4px 6px -2px rgba(59, 130, 246, 0.1);
+  }
+
+  .input-field {
+    @apply w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all;
+    --tw-ring-color: var(--color-base-blue);
+  }
+
+  .holo-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .holo-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.1) 30%,
+      rgba(255, 255, 255, 0.2) 40%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0.2) 60%,
+      rgba(255, 255, 255, 0.1) 70%,
+      transparent 80%
+    );
+    background-size: 200% 200%;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .holo-card:hover::before {
+    opacity: 1;
+    animation: holo 2s linear infinite;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
