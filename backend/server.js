@@ -6,8 +6,36 @@ import { generatePokemonImage } from './services/ai.js';
 import { uploadToIPFS, uploadMetadata } from './services/ipfs.js';
 import { enhancePokemonConcept } from './services/gemini.js';
 import { PokemonModel } from './models/pokemon.js';
+import db from './db/index.js';
 
 dotenv.config();
+
+// Initialize database
+db.serialize(() => {
+    db.run(`CREATE TABLE IF NOT EXISTS pokemon (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        token_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL,
+        element TEXT NOT NULL,
+        tier TEXT NOT NULL,
+        style TEXT NOT NULL,
+        hp INTEGER NOT NULL,
+        attack INTEGER NOT NULL,
+        defense INTEGER NOT NULL,
+        speed INTEGER NOT NULL,
+        image_url TEXT NOT NULL,
+        ipfs_uri TEXT NOT NULL,
+        owner_address TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+    console.log('Database initialized');
+});
+
+// Database connection error handler
+db.on('error', (err) => {
+    console.error('Database error:', err);
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -169,11 +197,19 @@ app.post('/api/mint', async (req, res) => {
 
 app.get('/api/gallery', async (req, res) => {
     try {
+        // Check if database is ready
+        if (!db) {
+            throw new Error('Database not connected');
+        }
+        
         const pokemon = await PokemonModel.getAll();
         res.json({ success: true, pokemon });
     } catch (error) {
         console.error("Gallery fetch failed:", error);
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ 
+            success: false, 
+            error: 'Failed to fetch gallery. ' + (error.message || 'Please try again later.') 
+        });
     }
 });
 
