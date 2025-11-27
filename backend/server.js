@@ -47,26 +47,42 @@ app.use((req, res, next) => {
 });
 
 // Update CORS options to be more permissive for debugging
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://poke-kraft.vercel.app',
+  'https://poke-kraft-*.vercel.app',
+  'https://poke-kraft-*--*.vercel.app',
+  'https://poke-kraft-*.vercel.app/',
+  'https://poke-kraft-*--*.vercel.app/'
+];
+
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://poke-kraft.vercel.app'
-    ];
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `CORS policy blocks this domain: ${origin}`;
-      console.warn(msg);
-      return callback(new Error(msg), false);
+    
+    // Check if the origin is in the allowed list or matches the wildcard pattern
+    if (allowedOrigins.some(allowed => {
+      if (allowed.includes('*')) {
+        const regex = new RegExp('^' + allowed.replace(/\*/g, '.*') + '$');
+        return regex.test(origin);
+      }
+      return allowed === origin;
+    })) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    
+    const msg = `CORS policy blocks this domain: ${origin}`;
+    console.warn(msg);
+    return callback(new Error(msg), false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true,
   preflightContinue: false,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 204,
+  // Enable preflight requests to be cached for 1 hour (in seconds)
+  maxAge: 3600
 };
 
 // Apply CORS with the updated options

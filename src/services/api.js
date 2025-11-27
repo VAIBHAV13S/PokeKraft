@@ -1,9 +1,7 @@
 import axios from 'axios';
 
 // Use the deployed backend URL in production, fallback to localhost in development
-const API_URL = import.meta.env.PROD 
-  ? 'https://poke-kraft-xgu2.vercel.app/api'
-  : 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export const api = {
     generatePokemon: async () => {

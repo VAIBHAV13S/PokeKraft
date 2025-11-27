@@ -15,6 +15,8 @@ import AgenticForge from './components/AgenticForge'
 import TradingCard from './components/TradingCard'
 import { api } from './services/api'
 
+const queryClient = new QueryClient()
+
 // ... (keep existing imports)
 
 function PokeCraftApp() {
@@ -208,8 +210,7 @@ function PokeCraftApp() {
   )
 }
 
-// Initialize QueryClient
-const queryClient = new QueryClient();
+// Initialize QueryClient moved to top
 
 function App() {
   return (
